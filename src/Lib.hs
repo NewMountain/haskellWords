@@ -1,13 +1,15 @@
 module Lib
-    ( someFunc
-    , someString
+    ( grid
+    , languages
+    , outputGrid
     ) where
 
-someFunc :: IO ()
-someFunc = putStrLn someString
 
-someString :: String
-someString = "someString"
+outputGrid :: [String] -> IO ()
+outputGrid = putStrLn . formatGrid
+
+formatGrid :: [String] -> String
+formatGrid = unlines 
 
 grid = [ "__C________R___"
        , "__SI________U__"
