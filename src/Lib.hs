@@ -1,8 +1,8 @@
 module Lib
     ( grid
     , languages
-    , outputGrid
     , solveGrid
+    , formatGrid 
     ) where
 
 import Data.List (isInfixOf, transpose)
@@ -10,22 +10,21 @@ import Data.Maybe (catMaybes)
 
 type Grid = [String]
 
-outputGrid :: Grid -> IO ()
-outputGrid = putStrLn . formatGrid
-
 formatGrid :: Grid -> String
 formatGrid = unlines 
 
 gridBothWays :: Grid -> Grid
 gridBothWays grid' = grid' ++ fmap reverse grid'
 
+diagonalize :: Grid -> Grid
+diagonalize = gridBothWays . transpose . skew
+
 getLines :: Grid -> [String]
-getLines grid' = horiVertDiag
-    where horiVertDiag = hori ++ vert ++ sE ++ nE
-          hori = gridBothWays grid'
+getLines grid' = hori ++ vert ++ sE ++ nE
+    where hori = gridBothWays grid'
           vert = gridBothWays $ transpose grid'
-          sE = gridBothWays $ transpose $ skew grid'
-          nE = gridBothWays $ transpose $ skew $ reverse grid'
+          sE =  diagonalize grid'
+          nE = diagonalize $ reverse grid'
 
 findWord :: Grid -> String -> Maybe String
 findWord grid' word = if found then Just word else Nothing
@@ -33,7 +32,7 @@ findWord grid' word = if found then Just word else Nothing
 
 findWords :: Grid -> [String] -> [String]
 findWords grid' words' = catMaybes foundWords
-    where foundWords = fmap (findWord grid') words'
+    where foundWords = findWord grid' <$> words'
 
 findWordInLine :: String -> String -> Bool
 findWordInLine = isInfixOf
@@ -43,10 +42,8 @@ skew [] = []
 skew (l:ls) = l : skew (fmap indent ls)
     where indent line = '_' : line
 
-solveGrid :: [String]
-solveGrid = findWords grid languages
-
-
+solveGrid :: Grid -> [String] -> [String]
+solveGrid = findWords
 
 grid :: Grid
 grid = [ "__C________R___"

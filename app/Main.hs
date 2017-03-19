@@ -3,4 +3,6 @@ module Main where
 import Lib
 
 main :: IO ()
-main = outputGrid grid
+main = do
+    putStrLn (formatGrid grid)
+    print (solveGrid grid languages)
